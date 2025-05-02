@@ -30,13 +30,10 @@ A responsive dashboard for managing user data with API integration.
 
 ## 🌐 API Configuration
 
-The app connects to:
-https://react-test-adsk.free.beeceptor.com/users
-
 Endpoints:
 
-- GET - Fetch all users
-- POST - Create new user
+- GET /users - Fetch all users
+- POST /user - Create new user
 
 ## 🎨 Customization
 
