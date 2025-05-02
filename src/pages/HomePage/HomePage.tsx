@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import {
   Box,
@@ -6,21 +6,30 @@ import {
   Button,
   CircularProgress,
   Alert,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CreateItemModal from "../../components/CreateItemModal";
 import useUserData from "../../hooks/useUserData";
 
 const HomePage: React.FC = () => {
-  const [openModal, setOpenModal] = React.useState(false);
-  const { users, loading, error, createUser, fetchUsers } = useUserData();
+  /* States */
+  const [openModal, setOpenModal] = useState(false);
+  const { users, loading, error, createUser } = useUserData();
 
+  /* Theme */
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  /* Columns config */
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Full Name", flex: 1, minWidth: 150 },
     { field: "email", headerName: "Email", flex: 1, minWidth: 200 },
-    { field: "age", headerName: "Age", flex: 0.5, minWidth: 90 },
+    { field: "age", headerName: "Age", width: 90 },
   ];
 
+  /* Error message */
   const handleCreateItem = async (newItem: {
     name: string;
     email: string;
@@ -37,35 +46,36 @@ const HomePage: React.FC = () => {
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        p: { xs: 2, sm: 3 },
-        gap: 3,
+        p: isSmallScreen ? 1 : 3,
       }}
     >
-      {/* Header with title and button */}
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
+          flexDirection: isSmallScreen ? "column" : "row",
           justifyContent: "space-between",
-          alignItems: "flex-start",
-          width: "100%",
+          alignItems: isSmallScreen ? "flex-start" : "center",
+          mb: 2,
         }}
       >
+        {/* Tittle */}
         <Box>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography variant={isSmallScreen ? "h5" : "h4"} component="h1">
             User Management
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
+          <Typography variant="body2" color="text.secondary">
             Manage your user data
           </Typography>
         </Box>
+
+        {/* Create button */}
         <Button
           variant="contained"
           onClick={() => setOpenModal(true)}
-          sx={{ height: "fit-content" }}
+          size={isSmallScreen ? "small" : "medium"}
           disabled={loading}
+          sx={{ mt: isSmallScreen ? 1 : 0 }}
         >
           + Create User
         </Button>
@@ -78,23 +88,24 @@ const HomePage: React.FC = () => {
         </Alert>
       )}
 
-      {/* Loading indicator or DataGrid */}
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            width: "100%",
-            height: 400,
-            "& .MuiDataGrid-root": {
-              border: "none",
-              boxShadow: 2,
-              borderRadius: 2,
-            },
-          }}
-        >
+      {/* Data Grid */}
+      <Box
+        sx={{
+          width: "100%",
+        }}
+      >
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
           <DataGrid
             rows={users}
             columns={columns}
@@ -104,17 +115,12 @@ const HomePage: React.FC = () => {
                 paginationModel: { pageSize: 5, page: 0 },
               },
             }}
-            sx={{
-              width: "100%",
-              "& .MuiDataGrid-cell:focus": {
-                outline: "none",
-              },
-            }}
-            density="comfortable"
+            density={isSmallScreen ? "compact" : "standard"}
           />
-        </Box>
-      )}
+        )}
+      </Box>
 
+      {/* Modal */}
       <CreateItemModal
         open={openModal}
         onClose={() => setOpenModal(false)}
