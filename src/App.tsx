@@ -33,6 +33,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontWeight: 500,
+          borderRadius: 3,
         },
       },
     },
