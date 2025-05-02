@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
     { field: "age", headerName: "Age", width: 90 },
   ];
 
-  /* Error message */
+  /* Create item */
   const handleCreateItem = async (newItem: {
     name: string;
     email: string;
