@@ -23,37 +23,65 @@ const style = {
 interface CreateItemModalProps {
   open: boolean;
   onClose: () => void;
-  onCreate: (item: { name: string; email: string; age: string }) => void;
+  onCreate: (item: {
+    name: string;
+    email: string;
+    age: string;
+  }) => Promise<boolean>;
+  loading?: boolean;
 }
 
 const CreateItemModal: React.FC<CreateItemModalProps> = ({
   open,
   onClose,
   onCreate,
+  loading = false,
 }) => {
   const [formData, setFormData] = React.useState({
     name: "",
     email: "",
     age: "",
   });
+  const [formError, setFormError] = React.useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onCreate(formData);
-    onClose();
+    setFormError("");
+
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.age) {
+      setFormError("All fields are required");
+      return;
+    }
+
+    if (isNaN(Number(formData.age))) {
+      setFormError("Age must be a number");
+      return;
+    }
+
+    const success = await onCreate(formData);
+    if (success) {
+      setFormData({ name: "", email: "", age: "" });
+      onClose();
+    }
   };
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={style}>
         <Typography variant="h6" component="h2" mb={3}>
-          Create New Item
+          Create New User
         </Typography>
+        {formError && (
+          <Typography color="error" mb={2}>
+            {formError}
+          </Typography>
+        )}
         <form onSubmit={handleSubmit}>
           <Stack spacing={3}>
             <TextField
@@ -62,6 +90,7 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
               name="name"
               value={formData.name}
               onChange={handleChange}
+              disabled={loading}
               required
             />
             <TextField
@@ -71,6 +100,7 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
               type="email"
               value={formData.email}
               onChange={handleChange}
+              disabled={loading}
               required
             />
             <TextField
@@ -80,15 +110,21 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
               type="number"
               value={formData.age}
               onChange={handleChange}
+              disabled={loading}
               inputProps={{ min: 0 }}
               required
             />
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button variant="outlined" onClick={onClose}>
+              <Button variant="outlined" onClick={onClose} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" color="primary">
-                Create
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Create"}
               </Button>
             </Stack>
           </Stack>
