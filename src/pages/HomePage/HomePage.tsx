@@ -44,21 +44,9 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        p: isSmallScreen ? 1 : 3,
-      }}
-    >
+    <Box>
       {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: isSmallScreen ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: isSmallScreen ? "flex-start" : "center",
-          mb: 2,
-        }}
-      >
+      <Box sx={{ m: 5 }}>
         {/* Tittle */}
         <Box>
           <Typography variant={isSmallScreen ? "h5" : "h4"} component="h1">
@@ -75,7 +63,7 @@ const HomePage: React.FC = () => {
           onClick={() => setOpenModal(true)}
           size={isSmallScreen ? "small" : "medium"}
           disabled={loading}
-          sx={{ mt: isSmallScreen ? 1 : 0 }}
+          sx={{ mt: 2 }}
         >
           + Create User
         </Button>
@@ -91,7 +79,7 @@ const HomePage: React.FC = () => {
       {/* Data Grid */}
       <Box
         sx={{
-          width: "100%",
+          width: "100vw",
         }}
       >
         {loading ? (
@@ -116,6 +104,14 @@ const HomePage: React.FC = () => {
               },
             }}
             density={isSmallScreen ? "compact" : "standard"}
+            sx={{
+              // Remove border from the entire DataGrid
+              border: "none",
+              // Target the grid's root container
+              "& .MuiDataGrid-root": {
+                border: "none",
+              },
+            }}
           />
         )}
       </Box>
